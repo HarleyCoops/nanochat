@@ -89,6 +89,59 @@ And a bit more about computing environments that will run nanochat:
 - If your GPU(s) have less than 80GB, you'll have to tune some of the hyperparameters or you will OOM / run out of VRAM. Look for `--device_batch_size` in the scripts and reduce it until things fit. E.g. from 32 (default) to 16, 8, 4, 2, or even 1. Less than that you'll have to know a bit more what you're doing and get more creative.
 - Most of the code is fairly vanilla PyTorch so it should run on anything that supports that - xpu, mps, or etc, but I haven't implemented this out of the box so it might take a bit of tinkering.
 
+## Cloud GPU Deployment (Hyperbolic Labs)
+
+If you don't have access to local GPUs or want to train larger models, you can deploy nanochat training to **Hyperbolic Labs GPU marketplace**. We've built a complete deployment system that:
+
+- 🚀 Automatically selects the right GPU type and count for your model
+- 💰 Finds the most cost-effective machines that meet your requirements
+- 📊 Provides cost estimates before deployment
+- ⚡ Supports H100, A100, and other high-performance GPUs
+
+### Quick Deploy to Cloud
+
+```bash
+# 1. Set your Hyperbolic Labs API key
+export HYPERBOLIC_API_KEY='your-api-key-here'
+
+# 2. Install deployment dependencies
+pip install requests
+
+# 3. Check available machines and costs
+python hyperbolic/deploy.py --model-size medium --list-machines
+
+# 4. Deploy training (medium model recommended)
+python hyperbolic/deploy.py --model-size medium --auto-launch
+```
+
+### Example Costs
+
+| Model Size | GPUs | Est. Cost/Hour | Training Time | Total Cost |
+|------------|------|----------------|---------------|------------|
+| Small (60M) | 2 | $3-6 | ~2 hours | ~$10 |
+| Medium (160M) | 4 | $12-20 | ~5 hours | ~$75 |
+| Large (410M) | 4-8 | $20-40 | ~10 hours | ~$300 |
+
+### Features
+
+- **Automatic GPU Selection**: Intelligently chooses GPU type based on model size
+- **Cost Optimization**: Finds cheapest machines that meet requirements
+- **Instance Management**: Easy monitoring and termination
+- **Setup Automation**: Automatic environment setup on cloud instances
+
+For complete documentation, see [hyperbolic/README.md](hyperbolic/README.md).
+
+### Getting Started
+
+1. **Get API Key**: Sign up at [hyperbolic.ai](https://hyperbolic.ai) and get your API key
+2. **Check Requirements**: Run `python hyperbolic/example.py` to see GPU requirements
+3. **List Machines**: Use `--list-machines` to see available options
+4. **Deploy**: Use `--auto-launch` to start training
+5. **Monitor**: Check progress via SSH or WandB
+6. **Terminate**: Don't forget to terminate when done!
+
+See the [Hyperbolic Deployment Guide](hyperbolic/README.md) for detailed instructions and examples.
+
 ## Questions
 
 nanochat is designed to be short and sweet. One big advantage of this is that we can package up all of the files together and copy paste them to your favorite LLM to ask arbitrary questions. As an example, I like to package up the repo using the [files-to-prompt](https://github.com/simonw/files-to-prompt) utility like so:

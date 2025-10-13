@@ -89,7 +89,30 @@ And a bit more about computing environments that will run nanochat:
 - If your GPU(s) have less than 80GB, you'll have to tune some of the hyperparameters or you will OOM / run out of VRAM. Look for `--device_batch_size` in the scripts and reduce it until things fit. E.g. from 32 (default) to 16, 8, 4, 2, or even 1. Less than that you'll have to know a bit more what you're doing and get more creative.
 - Most of the code is fairly vanilla PyTorch so it should run on anything that supports that - xpu, mps, or etc, but I haven't implemented this out of the box so it might take a bit of tinkering.
 
-## Cloud GPU Deployment (Hyperbolic Labs)
+## Training Without Local GPUs
+
+If you don't have access to local GPUs, you have two excellent options:
+
+### Option 1: Google Colab (Easiest - FREE Tier Available!)
+
+**Perfect for getting started** - Train models on Google Colab's free or paid GPUs:
+
+- ✅ **100% Free Tier**: T4 GPU (16GB) - Train small models in 2-3 hours
+- ✅ **Zero Setup**: Just upload notebook and run
+- ✅ **Google Drive Integration**: Auto-save checkpoints
+- ✅ **Step-by-Step Guide**: Complete walkthrough included
+
+**Quick Start:**
+1. Open the notebook: [notebooks/train_on_colab.ipynb](notebooks/train_on_colab.ipynb)
+2. Upload to [Google Colab](https://colab.research.google.com)
+3. Runtime > Change runtime type > GPU (T4, V100, or A100)
+4. Run all cells - that's it!
+
+**Direct Link:** [Open in Colab](https://colab.research.google.com/github/HarleyCoops/nanochat/blob/master/notebooks/train_on_colab.ipynb)
+
+See [notebooks/README.md](notebooks/README.md) for detailed instructions.
+
+### Option 2: Hyperbolic Labs (Production Scale)
 
 If you don't have access to local GPUs or want to train larger models, you can deploy nanochat training to **Hyperbolic Labs GPU marketplace**. We've built a complete deployment system that:
 

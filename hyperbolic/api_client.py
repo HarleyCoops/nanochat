@@ -64,16 +64,37 @@ class HyperbolicClient:
         response = self.session.post(url, json={})
         response.raise_for_status()
         
-        machines = response.json()
+        data = response.json()
+        
+        # Handle different response formats
+        if isinstance(data, dict) and "machines" in data:
+            machines = data["machines"]
+        elif isinstance(data, list):
+            machines = data
+        else:
+            # Unexpected format, return empty list
+            return []
+        
         instances = []
         
         for machine in machines:
+            # Skip if machine is not a dict
+            if not isinstance(machine, dict):
+                continue
+                
             # Parse GPU type from hardware info
             gpu_type = "Unknown"
-            if "hardware" in machine:
+            if "hardware" in machine and isinstance(machine["hardware"], dict):
                 hw = machine["hardware"]
-                if "gpu" in hw and "model" in hw["gpu"]:
+                if "gpu" in hw and isinstance(hw["gpu"], dict) and "model" in hw["gpu"]:
                     gpu_type = hw["gpu"]["model"]
+            
+            # Safely get pricing
+            pricing = 0.0
+            if "pricing" in machine and isinstance(machine["pricing"], dict):
+                price_info = machine["pricing"].get("price", {})
+                if isinstance(price_info, dict):
+                    pricing = float(price_info.get("amount", 0))
             
             instances.append(GPUInstance(
                 id=machine.get("id", ""),
@@ -82,9 +103,9 @@ class HyperbolicClient:
                 gpu_count=machine.get("gpus_total", 0),
                 gpu_type=gpu_type,
                 status=machine.get("status", ""),
-                pricing=float(machine.get("pricing", {}).get("price", {}).get("amount", 0)),
-                ram_gb=machine.get("hardware", {}).get("ram_gb", 0),
-                storage_gb=machine.get("hardware", {}).get("storage_gb", 0),
+                pricing=pricing,
+                ram_gb=machine.get("hardware", {}).get("ram_gb", 0) if isinstance(machine.get("hardware"), dict) else 0,
+                storage_gb=machine.get("hardware", {}).get("storage_gb", 0) if isinstance(machine.get("hardware"), dict) else 0,
                 gpus_total=machine.get("gpus_total", 0),
                 gpus_reserved=machine.get("gpus_reserved", 0),
                 reserved=machine.get("reserved", True)

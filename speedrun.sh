@@ -15,6 +15,13 @@ export OMP_NUM_THREADS=1
 NANOCHAT_BASE_DIR="$HOME/.cache/nanochat"
 mkdir -p $NANOCHAT_BASE_DIR
 
+# Load optional local environment overrides (e.g. WANDB credentials)
+if [ -f ".env" ]; then
+    set -a
+    source .env
+    set +a
+fi
+
 # -----------------------------------------------------------------------------
 # Python venv setup with uv
 
@@ -34,9 +41,22 @@ source .venv/bin/activate
 #    `wandb login`
 # 2) Set the WANDB_RUN environment variable when running this script, e.g.:
 #    `WANDB_RUN=d26 bash speedrun.sh`
+# If a .env file provides WANDB_RUN_NAME or WANDB_API_KEY those will be used automatically.
 if [ -z "$WANDB_RUN" ]; then
-    # by default use "dummy" : it's handled as a special case, skips logging to wandb
-    WANDB_RUN=dummy
+    if [ -n "$WANDB_RUN_NAME" ]; then
+        WANDB_RUN="$WANDB_RUN_NAME"
+    else
+        # by default use "dummy" : it's handled as a special case, skips logging to wandb
+        WANDB_RUN=dummy
+    fi
+fi
+
+if [ -n "$WANDB_API_KEY" ]; then
+    if command -v wandb >/dev/null 2>&1; then
+        wandb login --key "$WANDB_API_KEY" --relogin
+    else
+        echo "wandb CLI not found; skipping automatic login"
+    fi
 fi
 
 # -----------------------------------------------------------------------------

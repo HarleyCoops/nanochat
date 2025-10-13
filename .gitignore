@@ -1,5 +1,51 @@
+# Python
 .venv/
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Rust
 rustbpe/target/
+
+# Development
 dev-ignore/
+
+# Environment variables and secrets
+.env
+.env.local
+.env.*.local
+*.key
+*.pem
+
+# Hyperbolic deployment
+hyperbolic_deployment/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Training outputs
+base_checkpoints/
+chat_checkpoints/
+tokenized_data/
+report.md
+packaged.txt
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb

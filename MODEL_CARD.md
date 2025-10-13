@@ -76,7 +76,9 @@ model-index:
       value: 0.0854
 ---
 
-# nanochat: The Best ChatGPT That $100 Can Buy
+> **Status (Oct 13, 2025 @ 9:45 PM ET):** The 561M-parameter (depth-20) nanochat base model is training on a Lambda 8xH100 80GB node. Progress is roughly 1k / 21.4k base-pretraining steps, with completion expected shortly after midnight Eastern (around 04:30 UTC). This model card tracks that run and will be updated when checkpoints and final metrics land.
+
+# nanochat: The Best ChatGPT That "about $two-fifty" Can Buy
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/karpathy/nanochat/master/dev/nanochat.png" alt="nanochat logo" width="400"/>
@@ -85,6 +87,8 @@ model-index:
 ## Model Description
 
 **nanochat** is a full-stack implementation of a ChatGPT-like language model trained from scratch in a single, clean, minimal, and hackable codebase. This model demonstrates that powerful conversational AI capabilities can be achieved with modest computational budgets, making advanced language modeling accessible to researchers, educators, and practitioners.
+
+This live model card documents the 561M-parameter (`depth=20`, `sequence_len=2048`) run that is currently training on 8x NVIDIA H100 80GB GPUs via Lambda Labs. Once the run finishes we will post the resulting checkpoints, evaluation artifacts, and chat-ready weights here.
 
 This implementation represents a complete pipeline from raw text to a deployable chat interface, including:
 - Custom tokenizer training (BPE)
@@ -133,26 +137,26 @@ nanochat achieves remarkable training efficiency through:
 - **Learning Rate Scaling**: Automatically scales learning rate by 1/√(dim/768) for larger models
 
 **Computational Profile**:
-- **Target Compute**: 4×10^19 FLOPs (4e19)
-- **FLOPs per Token**: 3.49×10^9
+- **Target Compute**: ~4e19 FLOPs
+- **FLOPs per Token**: 3.49e9
 - **Model FLOPs Utilization (MFU)**: ~48% on H100 GPUs
-- **Throughput**: 1.08M tokens/second on 8×H100
+- **Throughput**: 1.08M tokens/second on 8x H100
 
 ## Training Details
 
 ### Hardware Infrastructure
 
-**Primary Configuration**:
-- **GPUs**: 8× NVIDIA H100 80GB
-- **Provider**: Lambda Labs GPU Cloud / Hyperbolic Labs
-- **Cost**: $24/hour (Lambda Labs pricing)
-- **Total Training Time**: 3 hours 51 minutes
-- **Total Cost**: ~$92.40
+**Primary Configuration (current run)**:
+- **GPUs**: 8x NVIDIA H100 80GB (SXM)
+- **Provider**: Lambda Labs GPU Cloud (via the Hyperbolic deployment automation)
+- **Launch Time**: Oct 13, 2025 @ 9:00 PM ET
+- **Projected Runtime**: ~10.5 hours for base pretraining plus alignment
+- **Projected Cost**: ~$250 at $24/hour for the 8xH100 node
 
 **Alternative Configurations**:
-- Compatible with 8×A100 80GB (slightly slower)
-- Scalable to single GPU (8× longer training time)
-- Adaptable to lower-memory GPUs via batch size reduction
+- 8x A100 80GB (adds ~35% to wall-clock time)
+- 4x H100 80GB with increased gradient accumulation
+- Single-GPU experiments by lowering `depth`, `device_batch_size`, and `max_seq_len`
 
 ### Training Pipeline
 
@@ -173,10 +177,10 @@ The custom Rust-based tokenizer (`rustbpe`) provides training performance critic
 - Competitive with GPT-4 tokenizer on English text despite smaller vocabulary
 
 #### Stage 2: Pretraining (Base Model)
-**Duration**: ~3 hours  
+**Duration**: ~10.5 hours (projected; 21,400 steps at ~1.9 s/step)  
 **Iterations**: 21,400 steps  
 **Training Tokens**: 11.2 billion (following Chinchilla optimal scaling)  
-**Batch Size**: 524,288 tokens per step (32 sequences × 2048 tokens × 8 GPUs)  
+**Batch Size**: 524,288 tokens per step (32 sequences x 2048 tokens x 8 GPUs)  
 **Dataset**: FineWeb-EDU (240 shards, ~24GB)  
 **Final Validation Loss**: 0.81 bits per byte  
 **CORE Score**: 0.2219  
@@ -184,8 +188,8 @@ The custom Rust-based tokenizer (`rustbpe`) provides training performance critic
 **Chinchilla Scaling Adherence**:
 Following Hoffmann et al. (2022), nanochat trains with a 20:1 token-to-parameter ratio:
 - Parameters: 560M
-- Optimal Training Tokens: 560M × 20 = 11.2B tokens
-- Compute Budget: 6 × 560M × 11.2B ≈ 3.8×10^19 FLOPs
+- Optimal Training Tokens: 560M x 20 = 11.2B tokens
+- Compute Budget: 6 x 560M x 11.2B ~ 3.8e19 FLOPs
 
 This optimization ensures maximal performance for the allocated compute budget, avoiding both undertrained and overtrained regimes.
 
@@ -387,12 +391,12 @@ This will:
 1. Set up the environment (uv, Rust, dependencies)
 2. Download training data
 3. Train tokenizer
-4. Pretrain base model (~3 hours on 8×H100)
+4. Pretrain base model (~10.5 hours on 8xH100)
 5. Perform midtraining (~8 minutes)
 6. Perform supervised fine-tuning (~7 minutes)
 7. Generate evaluation report
 
-**Total Cost**: ~$92 on Lambda Labs (8×H100 @ $24/hr)
+**Total Cost**: ~$250 on Lambda Labs (8xH100 @ $24/hr)
 
 ### Google Colab Training
 
@@ -612,8 +616,8 @@ nanochat should NOT be used for:
 
 **Environmental Impact**:
 Training nanochat consumes approximately:
-- 4×10^19 FLOPs of computation
-- ~96 kWh of electricity (estimated, 8×H100 for 4 hours at ~3kW per GPU)
+- 4x10^19 FLOPs of computation
+- ~250 kWh of electricity (estimated, 8x H100 for 10.5 hours at ~3kW per GPU)
 - Corresponding CO2 emissions depend on energy source
 
 **Data and Bias**:

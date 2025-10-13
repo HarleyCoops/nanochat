@@ -1,4 +1,4 @@
-# nanochat
+﻿# nanochat
 
 ![nanochat logo](dev/nanochat.png)
 
@@ -97,10 +97,10 @@ If you don't have access to local GPUs, you have two excellent options:
 
 **Perfect for getting started** - Train models on Google Colab's free or paid GPUs:
 
-- ✅ **100% Free Tier**: T4 GPU (16GB) - Train small models in 2-3 hours
-- ✅ **Zero Setup**: Just upload notebook and run
-- ✅ **Google Drive Integration**: Auto-save checkpoints
-- ✅ **Step-by-Step Guide**: Complete walkthrough included
+- âœ… **100% Free Tier**: T4 GPU (16GB) - Train small models in 2-3 hours
+- âœ… **Zero Setup**: Just upload notebook and run
+- âœ… **Google Drive Integration**: Auto-save checkpoints
+- âœ… **Step-by-Step Guide**: Complete walkthrough included
 
 **Quick Start:**
 1. Open the notebook: [notebooks/train_on_colab.ipynb](notebooks/train_on_colab.ipynb)
@@ -116,10 +116,10 @@ See [notebooks/README.md](notebooks/README.md) for detailed instructions.
 
 If you don't have access to local GPUs or want to train larger models, you can deploy nanochat training to **Hyperbolic Labs GPU marketplace**. We've built a complete deployment system that:
 
-- 🚀 Automatically selects the right GPU type and count for your model
-- 💰 Finds the most cost-effective machines that meet your requirements
-- 📊 Provides cost estimates before deployment
-- ⚡ Supports H100, A100, and other high-performance GPUs
+- ðŸš€ Automatically selects the right GPU type and count for your model
+- ðŸ’° Finds the most cost-effective machines that meet your requirements
+- ðŸ“Š Provides cost estimates before deployment
+- âš¡ Supports H100, A100, and other high-performance GPUs
 
 ### Quick Deploy to Cloud
 
@@ -195,7 +195,7 @@ nanochat is nowhere finished. The goal is to improve the state of the art in mic
 - nanochat is also inspired by [modded-nanoGPT](https://github.com/KellerJordan/modded-nanogpt), which gamified the nanoGPT repo with clear metrics and a leaderboard, and borrows a lot of its ideas and some implementation for pretraining.
 - Thank you to [HuggingFace](https://huggingface.co/) for fineweb and smoltalk.
 - Thank you [Lambda](https://lambda.ai/service/gpu-cloud) for the compute used in developing this project.
-- Thank you to chief LLM whisperer 🧙‍♂️ Alec Radford for advice/guidance.
+- Thank you to chief LLM whisperer ðŸ§™â€â™‚ï¸ Alec Radford for advice/guidance.
 
 ## Cite
 
@@ -214,3 +214,4 @@ If you find nanochat helpful in your research cite simply as:
 ## License
 
 MIT
+

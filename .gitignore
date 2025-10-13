@@ -49,3 +49,4 @@ packaged.txt
 # Jupyter
 .ipynb_checkpoints/
 *.ipynb
+!notebooks/train_on_colab.ipynb

@@ -16,7 +16,7 @@ datasets:
 - HuggingFaceTB/smoltalk
 - openai/gsm8k
 - cais/mmlu
-base_model: null
+base_model: custom
 model-index:
 - name: nanochat
   results:
@@ -398,9 +398,9 @@ This will:
 
 For those without access to cloud GPU infrastructure, we provide a complete Colab notebook:
 
-**Interactive Training Notebook**: [notebooks/train_on_colab.ipynb](https://github.com/karpathy/nanochat/blob/master/notebooks/train_on_colab.ipynb)
+**Interactive Training Notebook**: [notebooks/train_on_colab.ipynb](https://github.com/HarleyCoops/nanochat/blob/master/notebooks/train_on_colab.ipynb)
 
-**Direct Link**: [Open in Colab](https://colab.research.google.com/github/karpathy/nanochat/blob/master/notebooks/train_on_colab.ipynb)
+**Direct Link**: [Open in Colab](https://colab.research.google.com/github/HarleyCoops/nanochat/blob/master/notebooks/train_on_colab.ipynb)
 
 **Colab Options**:
 - **Free Tier**: T4 GPU (16GB) - Train smaller models in 2-3 hours
@@ -683,7 +683,7 @@ Special thanks to the open-source ML community for making projects like this pos
 
 **Documentation**:
 - [Training Walkthrough](https://github.com/karpathy/nanochat/discussions/1): Detailed guide to the speedrun
-- [Colab Notebook](https://github.com/karpathy/nanochat/blob/master/notebooks/train_on_colab.ipynb): Interactive training guide
+- [Colab Notebook](https://github.com/HarleyCoops/nanochat/blob/master/notebooks/train_on_colab.ipynb): Interactive training guide
 - [Hyperbolic Deployment](https://github.com/karpathy/nanochat/blob/master/hyperbolic/README.md): Cloud training guide
 
 **Related Projects**:

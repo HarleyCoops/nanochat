@@ -78,11 +78,7 @@ model-index:
 
 > **Status (Oct 13, 2025 @ 9:45 PM ET):** The 561M-parameter (depth-20) nanochat base model is training on a Lambda 8xH100 80GB node. Progress is roughly 1k / 21.4k base-pretraining steps, with completion expected shortly after midnight Eastern (around 04:30 UTC). This model card tracks that run and will be updated when checkpoints and final metrics land.
 
-# nanochat: The Best ChatGPT That "about $two-fifty" Can Buy
-
-<div align="center">
-  <img src="250nano.png" alt="nanochat logo" width="400"/>
-</div>
+<img src="250nano.png" alt="nanochat hero banner" width="100%">
 
 ## Model Description
 

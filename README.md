@@ -76,7 +76,7 @@ model-index:
       value: 0.0854
 ---
 
-> **Status (Oct 14, 2025 @ 9:30 AM MT / 11:30 AM ET):** Training is complete. This release contains the 561M-parameter nanochat SFT checkpoint (`model_000650.pt`) uploaded to [HarleyCooper/nanochat](https://huggingface.co/HarleyCooper/nanochat). Final validation metrics: ARC-Easy 43.35%, ARC-Challenge 32.51%, MMLU 32.35%, GSM8K 5.53%, HumanEval 6.10%. Hosted inference on Hugging Face is now live; see the quickstart below.
+> **Status (Oct 14, 2025 @ 9:30 AM MT / 11:30 AM ET):** Training is complete. This release contains the 561M-parameter nanochat SFT checkpoint (`model_000650.pt`) uploaded to [HarleyCooper/nanochat](https://huggingface.co/HarleyCooper/nanochat). Final validation metrics: ARC-Easy 43.35%, ARC-Challenge 32.51%, MMLU 32.35%, GSM8K 5.53%, HumanEval 6.10%. Hosted deployment options are being prepared; see below for local usage instructions.
 
 # nanochat: The Best ChatGPT That "about $two-fifty" Can Buy
 
@@ -84,23 +84,7 @@ model-index:
   <img src="250nano.png" alt="nanochat logo" width="400"/>
 </div>
 
-### Hugging Face Inference Quickstart
-
-```python
-from huggingface_hub import InferenceClient
-
-client = InferenceClient("HarleyCooper/nanochat", token="hf_xxx")  # optional if you use the public widget
-prompt = "User: Explain why transformers benefit from multi-head attention.\nAssistant:"
-response = client.text_generation(
-    prompt,
-    max_new_tokens=160,
-    temperature=0.7,
-    top_p=0.95,
-)
-print(response)
-```
-
-Alternatively, load the model locally:
+### Local Usage
 
 ```python
 from transformers import AutoTokenizer, AutoModelForCausalLM
@@ -707,7 +691,7 @@ Special thanks to the open-source ML community for making projects like this pos
   - Web interface and inference engine
   - Comprehensive evaluation suite
   - Google Colab support
-  - HuggingFace export capability
+  - Hugging Face export capability
 
 ## Additional Resources
 

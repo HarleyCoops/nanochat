@@ -85,7 +85,7 @@ model-index:
 # nanochat: The Best ChatGPT That "about $two-fifty" Can Buy
 
 <div align="center">
-  <img src="250nano.png" alt="nanochat logo" width="400"/>
+  <img src="250nano.png" alt="nanochat logo" width="100%"/>
 </div>
 
 ### Local Usage

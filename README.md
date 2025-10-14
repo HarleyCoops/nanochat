@@ -76,9 +76,39 @@ model-index:
       value: 0.0854
 ---
 
-> **Status (Oct 13, 2025 @ 9:13 PM ET / 7:13 PM MT):** Base pretraining is at step 8,038 / 21,400 (37.6%) with an average step time of ~1.86s (~281k tok/s). Remaining wall-clock ≈ 6h 55m, so completion is tracking for ~2:10 AM MT (~4:10 AM ET / 08:10 UTC). This model card will be updated again once checkpoints and final metrics land.
+> **Status (Oct 14, 2025 @ 9:30 AM MT / 11:30 AM ET):** Training is complete. This release contains the 561M-parameter nanochat SFT checkpoint (`model_000650.pt`) uploaded to [HarleyCooper/nanochat](https://huggingface.co/HarleyCooper/nanochat). Final validation metrics: ARC-Easy 43.35%, ARC-Challenge 32.51%, MMLU 32.35%, GSM8K 5.53%, HumanEval 6.10%. Hosted inference on Hugging Face is now live; see the quickstart below.
 
-<img src="250nano.png" alt="nanochat hero banner" width="100%">
+# nanochat: The Best ChatGPT That "about $two-fifty" Can Buy
+
+<div align="center">
+  <img src="250nano.png" alt="nanochat logo" width="400"/>
+</div>
+
+### Hugging Face Inference Quickstart
+
+```python
+from huggingface_hub import InferenceClient
+
+client = InferenceClient("HarleyCooper/nanochat", token="hf_xxx")  # optional if you use the public widget
+prompt = "User: Explain why transformers benefit from multi-head attention.\nAssistant:"
+response = client.text_generation(
+    prompt,
+    max_new_tokens=160,
+    temperature=0.7,
+    top_p=0.95,
+)
+print(response)
+```
+
+Alternatively, load the model locally:
+
+```python
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+model_id = "HarleyCooper/nanochat"
+tokenizer = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained(model_id, trust_remote_code=True, torch_dtype="bfloat16")
+```
 
 ## Model Description
 
@@ -393,24 +423,6 @@ This will:
 7. Generate evaluation report
 
 **Total Cost**: ~$250 on Lambda Labs (8xH100 @ $24/hr)
-
-### Training Monitoring Dashboard
-
-Track your training progress with real-time metrics visualization using Weights & Biases:
-
-```bash
-# Create dashboard for tracking training metrics
-py scripts/create_wandb_dashboard.py --manual
-```
-
-This will provide instructions to create a dashboard that tracks:
-- **MMLU Accuracy** - Multitask language understanding across 57 subjects
-- **ARC-Easy Accuracy** - Elementary science questions  
-- **GSM8K Accuracy** - Grade-school mathematics reasoning
-- **HumanEval Accuracy** - Python code generation benchmark
-- **Validation Loss** - Training progress over time
-
-Follow the printed instructions to create your dashboard in the W&B UI. The dashboard will automatically update as training progresses!
 
 ### Google Colab Training
 

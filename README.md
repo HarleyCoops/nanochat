@@ -394,6 +394,24 @@ This will:
 
 **Total Cost**: ~$250 on Lambda Labs (8xH100 @ $24/hr)
 
+### Training Monitoring Dashboard
+
+Track your training progress with real-time metrics visualization using Weights & Biases:
+
+```bash
+# Create dashboard for tracking training metrics
+py scripts/create_wandb_dashboard.py --manual
+```
+
+This will provide instructions to create a dashboard that tracks:
+- **MMLU Accuracy** - Multitask language understanding across 57 subjects
+- **ARC-Easy Accuracy** - Elementary science questions  
+- **GSM8K Accuracy** - Grade-school mathematics reasoning
+- **HumanEval Accuracy** - Python code generation benchmark
+- **Validation Loss** - Training progress over time
+
+Follow the printed instructions to create your dashboard in the W&B UI. The dashboard will automatically update as training progresses!
+
 ### Google Colab Training
 
 For those without access to cloud GPU infrastructure, we provide a complete Colab notebook:

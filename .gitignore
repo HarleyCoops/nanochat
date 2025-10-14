@@ -50,3 +50,4 @@ packaged.txt
 .ipynb_checkpoints/
 *.ipynb
 !notebooks/train_on_colab.ipynb
+test_inference.py

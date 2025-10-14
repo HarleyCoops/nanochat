@@ -100,6 +100,28 @@ model = AutoModelForCausalLM.from_pretrained(model_id, trust_remote_code=True, t
 
 ![HF inference attempt with big red X](HFmistake.png)
 
+## Parameter Snapshot
+
+**nanochat**’s published checkpoint is a 20-layer Transformer with **560,988,160 learnable parameters**. The count comes from:
+
+| Component | Calculation | Params |
+| --- | --- | --- |
+| Token embedding | 65,536 vocab × 1,280 dim | 83,886,080 |
+| 20 × Attention projections | 20 × (4 × 1,280 × 1,280) | 131,072,000 |
+| 20 × MLP projections | 20 × [1,280 × (4 × 1,280) + (4 × 1,280) × 1,280] | 262,144,000 |
+| Output head | 1,280 dim × 65,536 vocab | 83,886,080 |
+| **Total** |  | **560,988,160** |
+
+```text
+Param share
+Embedding        ███████▋ 14.9%
+Attention        ███████████ 23.4%
+MLP              ████████████████████ 46.7%
+Output head      ███████▋ 14.9%
+```
+
+The embeddings are untied, so the input lookup and output head each contribute the same ~84M parameters, while each of the 20 decoder blocks supplies ~19.7M parameters split between attention (6.6M) and MLP (13.1M) weights.
+
 ## Model Description
 
 **nanochat** is a full-stack implementation of a ChatGPT-like language model trained from scratch in a single, clean, minimal, and hackable codebase. This model demonstrates that powerful conversational AI capabilities can be achieved with modest computational budgets, making advanced language modeling accessible to researchers, educators, and practitioners.

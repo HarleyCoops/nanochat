@@ -76,13 +76,55 @@ model-index:
       value: 0.0854
 ---
 
-> **Status (Oct 13, 2025 @ 9:45 PM ET):** The 561M-parameter (depth-20) nanochat base model is training on a Lambda 8xH100 80GB node. Progress is roughly 1k / 21.4k base-pretraining steps, with completion expected shortly after midnight Eastern (around 04:30 UTC). This model card tracks that run and will be updated when checkpoints and final metrics land.
+> **Status (Oct 13, 2025 @ 9:13 PM ET / 7:13 PM MT):** Base pretraining is at step 8,038 / 21,400 (37.6%) with an average step time of ~1.86s (~281k tok/s). Remaining wall-clock ≈ 6h 55m, so completion is tracking for ~2:10 AM MT (~4:10 AM ET / 08:10 UTC). This model card will be updated again once checkpoints and final metrics land.
 
 <img src="250nano.png" alt="nanochat hero banner" width="100%">
 
 ## Model Description
 
 **nanochat** is a full-stack implementation of a ChatGPT-like language model trained from scratch in a single, clean, minimal, and hackable codebase. This model demonstrates that powerful conversational AI capabilities can be achieved with modest computational budgets, making advanced language modeling accessible to researchers, educators, and practitioners.
+
+### Hugging Face Deployment Map
+
+```mermaid
+graph TD
+    subgraph Export Artifacts
+        CFG[config.json<br/>NanoChatConfig]
+        WEIGHTS[pytorch_model.bin<br/>561M parameters]
+        GCFG[generation_config.json]
+        TOK[tokenizer/<br/>tokenizer.pkl]
+        TOKCFG[tokenizer_config.json<br/>special_tokens_map.json]
+        CODE[configuration_nanochat.py<br/>modeling_nanochat.py<br/>tokenization_nanochat.py<br/>__init__.py]
+        REQS[requirements.txt<br/>(tiktoken)]
+    end
+
+    subgraph Hugging Face Hub
+        REPO[Model Repository<br/>HarleyCooper/nanochat]
+    end
+
+    subgraph Inference Runtime
+        AUTO[Transformers Auto*.<br/>from_pretrained(..., trust_remote_code=True)]
+        MODEL[NanoChatForCausalLM<br/>loaded on GPU]
+        TOKENIZER[NanoChatTokenizer]
+        WIDGET[Hosted Inference,<br/>Spaces, Endpoints]
+        USER_APP[User App<br/>CLI / API / Web]
+    end
+
+    CFG --> REPO
+    WEIGHTS --> REPO
+    GCFG --> REPO
+    TOK --> REPO
+    TOKCFG --> REPO
+    CODE --> REPO
+    REQS --> REPO
+
+    REPO --> AUTO
+    AUTO --> MODEL
+    AUTO --> TOKENIZER
+    MODEL --> WIDGET
+    TOKENIZER --> WIDGET
+    WIDGET --> USER_APP
+```
 
 This live model card documents the 561M-parameter (`depth=20`, `sequence_len=2048`) run that is currently training on 8x NVIDIA H100 80GB GPUs via Lambda Labs. Once the run finishes we will post the resulting checkpoints, evaluation artifacts, and chat-ready weights here.
 

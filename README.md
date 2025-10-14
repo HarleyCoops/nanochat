@@ -76,7 +76,7 @@ model-index:
       value: 0.0854
 ---
 
-> **Status (Oct 13, 2025 @ 9:45 PM ET):** The 561M-parameter (depth-20) nanochat base model is training on a Lambda 8xH100 80GB node. Progress is roughly 1k / 21.4k base-pretraining steps, with completion expected shortly after midnight Eastern (around 04:30 UTC). This model card tracks that run and will be updated when checkpoints and final metrics land.
+> **Status (Oct 13, 2025 @ 9:13 PM ET / 7:13 PM MT):** Base pretraining is at step 8,038 / 21,400 (37.6%) with an average step time of ~1.86s (~281k tok/s). Remaining wall-clock ≈ 6h 55m, so completion is tracking for ~2:10 AM MT (~4:10 AM ET / 08:10 UTC). This model card will be updated again once checkpoints and final metrics land.
 
 <img src="250nano.png" alt="nanochat hero banner" width="100%">
 

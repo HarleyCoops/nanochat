@@ -20,6 +20,10 @@ The conversion process:
 3. Upload to HuggingFace Hub
 4. Deploy on Inference Endpoints
 
+> **Need a Space instead?** A ready-to-run Gradio starter now lives in
+> `deploy/hf_space/`. Drop `app.py` and `requirements.txt` into a new Hugging
+> Face Space (with the model assets) to spin up a hosted chat UI.
+
 ## Step 1: Export Model to HuggingFace Format
 
 After training completes, export your model:

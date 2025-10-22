@@ -7,7 +7,7 @@ import configuration_nanochat  # noqa: F401
 import modeling_nanochat  # noqa: F401
 
 
-MODEL_ID = "HarleyCooper/nanochat"
+MODEL_ID = "HarleyCooper/nanochat561"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 if torch.cuda.is_available():

@@ -2,7 +2,66 @@
 
 This directory contains all the files needed to deploy NanoChat as a HuggingFace Space.
 
-## Quick Start
+## 🚀 Quick Start (Automated Deployment)
+
+### One-Command Deployment
+
+The easiest way to deploy is using our automated script:
+
+```bash
+# From the project root
+./deploy_inference.sh
+
+# Or with a custom space name
+./deploy_inference.sh my-nanochat-demo
+```
+
+This script will:
+- ✓ Check and install dependencies
+- ✓ Verify you're logged into HuggingFace
+- ✓ Create and configure the Space
+- ✓ Upload all necessary files
+- ✓ Provide you with the Space URL
+
+**First time setup:**
+```bash
+# 1. Install HuggingFace CLI
+pip install huggingface_hub
+
+# 2. Login to HuggingFace
+huggingface-cli login
+# Paste your token from: https://huggingface.co/settings/tokens
+
+# 3. Deploy!
+./deploy_inference.sh
+```
+
+### Advanced Deployment Options
+
+For more control, use the Python script directly:
+
+```bash
+# Basic deployment
+python scripts/deploy_hf_space.py --space-name my-nanochat-demo
+
+# Deploy to organization
+python scripts/deploy_hf_space.py --space-name nanochat --org my-org
+
+# Private space with GPU
+python scripts/deploy_hf_space.py --space-name my-nanochat --private --hardware t4-small
+
+# Use different model
+python scripts/deploy_hf_space.py --space-name my-nanochat --model-id username/my-model
+```
+
+**Hardware options:**
+- `cpu-basic` - Free (slower, default)
+- `cpu-upgrade` - ~$0.03/hr (faster CPU)
+- `t4-small` - ~$0.60/hr (GPU, recommended for production)
+- `t4-medium` - ~$1.20/hr (larger GPU)
+- `a10g-small` - ~$3.15/hr (fastest)
+
+## Manual Deployment
 
 ### Option 1: Deploy via HuggingFace Web UI (Recommended)
 

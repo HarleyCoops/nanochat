@@ -75,7 +75,7 @@ model-index:
       type: pass@1
       value: 0.0854
 ---
-
+ 
 > **Status (Oct 14, 2025 @ 9:30 AM MT / 11:30 AM ET):** Training is complete. This release contains the 561M-parameter nanochat SFT checkpoint (`model_000650.pt`) uploaded to [HarleyCooper/nanochat](https://huggingface.co/HarleyCooper/nanochat). Final validation metrics: ARC-Easy 43.35%, ARC-Challenge 32.51%, MMLU 32.35%, GSM8K 5.53%, HumanEval 6.10%. Hosted deployment options are being prepared; see below for local usage instructions.
 
 

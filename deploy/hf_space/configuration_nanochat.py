@@ -10,7 +10,7 @@ from transformers.configuration_utils import PretrainedConfig
 
 
 class NanoChatConfig(PretrainedConfig):
-    model_type = "nanochat"
+    model_type = "nanochat-gpt"
 
     def __init__(
         self,

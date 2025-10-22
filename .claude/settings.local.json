@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(huggingface-cli repo-files:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "architectures": [
+    "NanoChatForCausalLM"
+  ],
+  "model_type": "nanochat",
+  "auto_map": {
+    "AutoConfig": "configuration_nanochat.NanoChatConfig",
+    "AutoModelForCausalLM": "modeling_nanochat.NanoChatForCausalLM"
+  },
+  "vocab_size": 65536,
+  "sequence_len": 2048,
+  "n_embd": 1280,
+  "n_layer": 20,
+  "n_head": 10,
+  "n_kv_head": 10,
+  "bos_token_id": 1,
+  "eos_token_id": 1,
+  "torch_dtype": "bfloat16",
+  "transformers_version": "4.36.0"
+}

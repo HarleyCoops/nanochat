@@ -49,4 +49,9 @@ class NanoChatConfig(PretrainedConfig):
         self.use_qk_norm = use_qk_norm
         self.tie_word_embeddings = tie_word_embeddings
         self.softcap = softcap
-
+        
+        # Aliases for transformers compatibility
+        self.num_hidden_layers = n_layer
+        self.hidden_size = n_embd
+        self.num_attention_heads = n_head
+        self.num_key_value_heads = n_kv_head

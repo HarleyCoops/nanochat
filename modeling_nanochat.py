@@ -94,8 +94,9 @@ class NanoChatAttention(nn.Module):
 
         if past_key_value is not None:
             past_k, past_v = past_key_value
-            key = torch.cat([past_k, key], dim=2)
-            value = torch.cat([past_v, value], dim=2)
+            if past_k is not None and past_v is not None:
+                key = torch.cat([past_k, key], dim=2)
+                value = torch.cat([past_v, value], dim=2)
 
         present = (key, value) if use_cache else None
 
@@ -179,8 +180,11 @@ class NanoChatModel(nn.Module):
         theta = 10000.0 ** (-torch.arange(0, head_dim, 2, device=device, dtype=torch.float32) / head_dim)
         position_ids = torch.arange(seq_len, device=device, dtype=torch.float32)
         freqs = torch.einsum("i,j->ij", position_ids, theta)
-        cos = torch.repeat_interleave(freqs.cos()[None, None, :, :], repeats=1, dim=0)
-        sin = torch.repeat_interleave(freqs.sin()[None, None, :, :], repeats=1, dim=0)
+        cos = freqs.cos()[None, None, :, :]
+        sin = freqs.sin()[None, None, :, :]
+        # Expand to full head_dim (from head_dim/2 to head_dim)
+        cos = torch.repeat_interleave(cos, repeats=2, dim=-1)
+        sin = torch.repeat_interleave(sin, repeats=2, dim=-1)
         cos = cos.to(dtype=dtype)
         sin = sin.to(dtype=dtype)
 
@@ -205,7 +209,11 @@ class NanoChatModel(nn.Module):
         x = inputs_embeds
 
         past_key_values = past_key_values or tuple([None] * len(self.blocks))
-        past_length = past_key_values[0][0].size(2) if past_key_values and past_key_values[0] is not None else 0
+        # Handle DynamicCache which may have (None, None) tuples
+        past_length = 0
+        if past_key_values and past_key_values[0] is not None:
+            if past_key_values[0][0] is not None:
+                past_length = past_key_values[0][0].size(2)
 
         cos_full, sin_full = self._build_rope_cache(seq_len + past_length, device, dtype)
         cos = cos_full[:, :, past_length:, :]

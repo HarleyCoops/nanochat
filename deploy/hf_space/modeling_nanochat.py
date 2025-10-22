@@ -299,4 +299,5 @@ class NanoChatForCausalLM(PreTrainedModel):
 
 
 AutoConfig.register("nanochat", NanoChatConfig)
+AutoConfig.register("nanochat-gpt", NanoChatConfig)
 AutoModelForCausalLM.register(NanoChatConfig, NanoChatForCausalLM)

@@ -8,7 +8,11 @@ sdk_version: 5.0.0
 app_file: app.py
 pinned: false
 license: mit
+suggested_hardware: cpu-basic
+models:
+  - HarleyCooper/nanochat561
 ---
+
 
 # NanoChat 561M - Chat Interface
 

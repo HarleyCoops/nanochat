@@ -1,12 +1,13 @@
 import gradio as gr
 import torch
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoTokenizer
 
 # Ensure custom config/model are registered with transformers
 import configuration_nanochat  # noqa: F401
 import modeling_nanochat  # noqa: F401
+import tokenization_nanochat  # noqa: F401
 
-# Updated: Fixed tokenizer, config, DynamicCache, weights, RoPE dims, and past_kv None handling
+# Fixed: tokenizer, config, DynamicCache, weights, RoPE dims, past_kv None handling
 
 
 MODEL_ID = "HarleyCooper/nanochat561"
@@ -18,20 +19,25 @@ if torch.cuda.is_available():
 else:
     TORCH_DTYPE = torch.float32
 
-
 tokenizer = AutoTokenizer.from_pretrained(
     MODEL_ID,
     trust_remote_code=True,
+    revision="main",
 )
+
+# Align tokenizer special tokens with training-time values.
+tokenizer.pad_token = "<|assistant_end|>"
+tokenizer.eos_token = "<|assistant_end|>"
 
 # Ensure pad token exists for generation.
 if tokenizer.pad_token_id is None:
     tokenizer.pad_token = tokenizer.eos_token or tokenizer.bos_token
 
-model = AutoModelForCausalLM.from_pretrained(
+model = modeling_nanochat.NanoChatForCausalLM.from_pretrained(
     MODEL_ID,
+    revision="main",
     torch_dtype=TORCH_DTYPE,
-    trust_remote_code=True,
+    low_cpu_mem_usage=True,
 )
 
 config = model.config
@@ -39,21 +45,34 @@ if not hasattr(config, "num_hidden_layers") and hasattr(config, "n_layer"):
     config.num_hidden_layers = config.n_layer
 if not hasattr(config, "hidden_size") and hasattr(config, "n_embd"):
     config.hidden_size = config.n_embd
+config.eos_token_id = tokenizer.eos_token_id
+config.pad_token_id = tokenizer.pad_token_id
+
+# Force pad/eos tokens to be the same and sync to model config
+tokenizer.pad_token = "<|assistant_end|>"
+tokenizer.eos_token = "<|assistant_end|>"
+model.config.pad_token_id = tokenizer.pad_token_id
+model.config.eos_token_id = tokenizer.eos_token_id
 
 model.to(DEVICE)
 model.eval()
 
 
 def build_prompt(history, user_message):
-    turns = []
+    # Build conversation with special tokens matching training format
+    tokens_text = "<|bos|>"
+    
     for user, assistant in history:
         if user:
-            turns.append(f"User: {user}")
+            tokens_text += f"<|user_start|>{user}<|user_end|>"
         if assistant:
-            turns.append(f"Assistant: {assistant}")
-    turns.append(f"User: {user_message}")
-    turns.append("Assistant:")
-    return "\n".join(turns)
+            tokens_text += f"<|assistant_start|>{assistant}<|assistant_end|>"
+    
+    # Add current user message and prime for assistant response
+    tokens_text += f"<|user_start|>{user_message}<|user_end|>"
+    tokens_text += "<|assistant_start|>"
+    
+    return tokens_text
 
 
 def generate_response(message, history, max_new_tokens, temperature, top_p, top_k, repetition_penalty):

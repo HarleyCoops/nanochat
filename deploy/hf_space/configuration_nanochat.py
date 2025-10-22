@@ -10,7 +10,14 @@ from transformers.configuration_utils import PretrainedConfig
 
 
 class NanoChatConfig(PretrainedConfig):
-    model_type = "nanochat-gpt"
+    # Match the identifier used when registering with AutoConfig / AutoTokenizer
+    model_type = "nanochat"
+    attribute_map = {
+        "num_attention_heads": "n_head",
+        "hidden_size": "n_embd",
+        "num_hidden_layers": "n_layer",
+    }
+    tokenizer_class = "NanoChatTokenizer"
 
     def __init__(
         self,

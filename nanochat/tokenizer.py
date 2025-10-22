@@ -9,6 +9,8 @@ Two implementations are available:
 import os
 import copy
 from functools import lru_cache
+import json
+from pathlib import Path
 
 SPECIAL_TOKENS = [
     # every document begins with the Beginning of Sequence (BOS) token that delimits documents
@@ -151,6 +153,7 @@ class HuggingFaceTokenizer:
 import pickle
 import rustbpe
 import tiktoken
+from nanochat.common import get_base_dir
 
 class RustBPETokenizer:
     """Light wrapper around tiktoken (for efficient inference) but train with rustbpe"""
@@ -376,12 +379,58 @@ class RustBPETokenizer:
 # -----------------------------------------------------------------------------
 # nanochat-specific convenience functions
 
-def get_tokenizer():
-    from nanochat.common import get_base_dir
+def get_tokenizer(force_rebuild=False):
     base_dir = get_base_dir()
     tokenizer_dir = os.path.join(base_dir, "tokenizer")
-    # return HuggingFaceTokenizer.from_directory(tokenizer_dir)
-    return RustBPETokenizer.from_directory(tokenizer_dir)
+    pickle_path = os.path.join(tokenizer_dir, "tokenizer.pkl")
+
+    if not force_rebuild and os.path.exists(pickle_path):
+        return RustBPETokenizer.from_directory(tokenizer_dir)
+
+    # If the pickle file doesn't exist, rebuild it from tokenizer.json
+    print("Tokenizer pickle not found. Rebuilding from temp_tokenizer/tokenizer.json...")
+    
+    # Path to the source tokenizer.json
+    project_root = Path(__file__).resolve().parent.parent
+    tokenizer_json_path = project_root / "temp_tokenizer" / "tokenizer.json"
+    if not tokenizer_json_path.exists():
+        raise FileNotFoundError(f"Cannot rebuild tokenizer: {tokenizer_json_path} not found.")
+
+    with open(tokenizer_json_path, 'r', encoding='utf-8') as f:
+        hf_tokenizer_data = json.load(f)
+
+    # Extract merges and vocabulary
+    merges = hf_tokenizer_data['model']['merges']
+    vocab = hf_tokenizer_data['model']['vocab']
+
+    # Convert HF merges to tiktoken's mergeable_ranks format
+    mergeable_ranks = {
+        (bytes(vocab[token_a]) + bytes(vocab[token_b])): rank
+        for rank, (token_a, token_b) in enumerate(merges)
+    }
+
+    # Extract special tokens
+    special_tokens = {
+        token['content']: token['id'] 
+        for token in hf_tokenizer_data['added_tokens']
+    }
+
+    # Create the tiktoken encoding object
+    enc = tiktoken.Encoding(
+        name="nanochat_rebuilt",
+        pat_str=SPLIT_PATTERN,
+        mergeable_ranks=mergeable_ranks,
+        special_tokens=special_tokens,
+    )
+
+    # Create the tokenizer instance and save it
+    tokenizer = RustBPETokenizer(enc, "<|bos|>")
+    os.makedirs(tokenizer_dir, exist_ok=True)
+    tokenizer.save(tokenizer_dir)
+    print("Successfully rebuilt and cached the tokenizer.")
+
+    return tokenizer
+
 
 def get_token_bytes(device="cpu"):
     import torch

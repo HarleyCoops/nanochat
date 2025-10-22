@@ -51,3 +51,10 @@ packaged.txt
 *.ipynb
 !notebooks/train_on_colab.ipynb
 test_inference.py
+
+# NanoChat Artifacts
+/hf_upload/
+/tokenizer/
+/temp_rebuilt_artifacts/
+/temp_hf_export/
+/temp_space_check/

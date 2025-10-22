@@ -10,6 +10,9 @@ from typing import Dict, List, Optional, Tuple
 
 import tiktoken
 from transformers.tokenization_utils import PreTrainedTokenizer
+from transformers import AutoTokenizer
+
+from configuration_nanochat import NanoChatConfig
 
 SPECIAL_TOKENS = [
     "<|bos|>",
@@ -106,3 +109,7 @@ class NanoChatTokenizer(PreTrainedTokenizer):
         if skip_special_tokens:
             token_ids = [tid for tid in token_ids if tid not in self.all_special_ids]
         return self._encoding.decode(token_ids)
+
+
+# Register the tokenizer so AutoTokenizer can locate it via NanoChatConfig.
+AutoTokenizer.register(NanoChatConfig, NanoChatTokenizer)

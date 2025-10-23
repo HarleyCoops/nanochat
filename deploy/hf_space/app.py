@@ -2,11 +2,6 @@ import gradio as gr
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
-# Ensure custom config/model are registered before loading from Hub.
-import configuration_nanochat  # noqa: F401
-import modeling_nanochat  # noqa: F401
-
-
 MODEL_ID = "HarleyCooper/nanochat561"
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
@@ -17,17 +12,11 @@ else:
     TORCH_DTYPE = torch.float32
 
 
-try:
-    tokenizer = AutoTokenizer.from_pretrained(
-        MODEL_ID,
-        trust_remote_code=True,
-        use_fast=False,
-    )
-except Exception as exc:
-    raise RuntimeError(
-        "Failed to load the nanochat tokenizer. Make sure `tokenizer/tokenizer.pkl` "
-        "or the expected tokenizer assets are present in the repository."
-    ) from exc
+tokenizer = AutoTokenizer.from_pretrained(
+    MODEL_ID,
+    trust_remote_code=True,
+    use_fast=False,
+)
 
 # Ensure pad token exists for generation.
 if tokenizer.pad_token_id is None:

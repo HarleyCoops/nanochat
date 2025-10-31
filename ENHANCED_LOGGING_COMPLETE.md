@@ -1,37 +1,37 @@
-# Enhanced W&B Logging - Fully Integrated! 🚀
+# Enhanced W&B Logging - Fully Integrated
 
-## ✅ Integration Complete
+## Integration Complete
 
 Enhanced logging is now **fully integrated** into all training scripts and works seamlessly with `speedrun.sh`. **No user configuration needed** - just run your training pipeline!
 
 ## What Was Integrated
 
 ### 1. **Base Training** (`scripts/base_train.py`)
-- ✅ Enhanced logging with GPU/system metrics
-- ✅ Training stage identification: `pretraining`
-- ✅ Dataset tracking: `FineWeb-EDU`
-- ✅ Evaluation metrics logging for 3D visualization
-- ✅ Comprehensive efficiency metrics (MFU, throughput, FLOPs)
+- Enhanced logging with GPU/system metrics
+- Training stage identification: `pretraining`
+- Dataset tracking: `FineWeb-EDU`
+- Evaluation metrics logging for 3D visualization
+- Comprehensive efficiency metrics (MFU, throughput, FLOPs)
 
 ### 2. **Midtraining** (`scripts/mid_train.py`)
-- ✅ **Multi-dataset tracking**: Tracks SmolTalk, MMLU, and GSM8K individually
-- ✅ Training stage identification: `midtraining`
-- ✅ Dataset-specific metrics (coverage, examples seen per dataset)
-- ✅ Task mixture ratios logged
-- ✅ Real-time dataset tracking via `DatasetTracker`
+- **Multi-dataset tracking**: Tracks SmolTalk, MMLU, and GSM8K individually
+- Training stage identification: `midtraining`
+- Dataset-specific metrics (coverage, examples seen per dataset)
+- Task mixture ratios logged
+- Real-time dataset tracking via `DatasetTracker`
 
 ### 3. **SFT Training** (`scripts/chat_sft.py`)
-- ✅ **Multi-dataset tracking**: Tracks ARC-Easy, ARC-Challenge, GSM8K, and SmolTalk
-- ✅ Training stage identification: `sft`
-- ✅ Enhanced evaluation metrics (MMLU, ARC-Easy, GSM8K, HumanEval)
-- ✅ Dataset coverage tracking
-- ✅ Normalized metrics for 3D visualization
+- **Multi-dataset tracking**: Tracks ARC-Easy, ARC-Challenge, GSM8K, and SmolTalk
+- Training stage identification: `sft`
+- Enhanced evaluation metrics (MMLU, ARC-Easy, GSM8K, HumanEval)
+- Dataset coverage tracking
+- Normalized metrics for 3D visualization
 
 ### 4. **RL Training** (`scripts/chat_rl.py`)
-- ✅ Training stage identification: `rl`
-- ✅ Dataset tracking: `GSM8K`
-- ✅ Reward and sequence length metrics
-- ✅ Pass@k evaluation metrics
+- Training stage identification: `rl`
+- Dataset tracking: `GSM8K`
+- Reward and sequence length metrics
+- Pass@k evaluation metrics
 
 ## How It Works
 
@@ -126,11 +126,11 @@ This will create 3D visualizations showing:
 ## Zero Configuration Required
 
 Everything works automatically:
-- ✅ No config files needed
-- ✅ No manual setup required
-- ✅ Works with existing `speedrun.sh`
-- ✅ Backward compatible (if W&B disabled, uses DummyWandb)
-- ✅ Graceful fallback if metrics unavailable
+- No config files needed
+- No manual setup required
+- Works with existing `speedrun.sh`
+- Backward compatible (if W&B disabled, uses DummyWandb)
+- Graceful fallback if metrics unavailable
 
 ## Example W&B Run Structure
 
@@ -183,5 +183,5 @@ nanochat/
 
 ## Summary
 
-**You're all set!** Enhanced logging is fully integrated and ready to use. Just run `speedrun.sh` with `WANDB_RUN` set, and you'll get comprehensive tracking across all training stages with beautiful 3D visualizations ready to go! 🎉
+You're all set! Enhanced logging is fully integrated and ready to use. Just run `speedrun.sh` with `WANDB_RUN` set, and you'll get comprehensive tracking across all training stages with beautiful 3D visualizations ready to go!
 

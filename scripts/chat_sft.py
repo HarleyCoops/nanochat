@@ -287,7 +287,7 @@ if master_process:
             "model_config": model_config_kwargs,
         }
     )
-    print(f"✅ Saved model checkpoint to {checkpoint_dir}")
+    print(f"Saved model checkpoint to {checkpoint_dir}")
 
 # Log to report
 from nanochat.report import get_report

@@ -12,10 +12,10 @@ This module creates stunning 3D visualizations of your NanoChat training pipelin
 
 ## New W&B Server v0.75.0 Features Showcased
 
-- ✅ **3D Charts**: Full support for 3D scatter plots and trajectories
-- ✅ **Semantic Coloring**: Color plots based on config properties (hyperparameters, performance metrics)
-- ✅ **Full-Fidelity Rendering**: Detailed system metrics visualization
-- ✅ **Interactive Visualizations**: Rotate, zoom, and explore your training data
+- **3D Charts**: Full support for 3D scatter plots and trajectories
+- **Semantic Coloring**: Color plots based on config properties (hyperparameters, performance metrics)
+- **Full-Fidelity Rendering**: Detailed system metrics visualization
+- **Interactive Visualizations**: Rotate, zoom, and explore your training data
 
 ## Installation
 
@@ -208,5 +208,5 @@ To add more visualizations:
 2. Create visualization function with `@weave.op()` decorator
 3. Add to `create_complete_visualization_app()`
 
-Happy visualizing! 🚀📊✨
+Happy visualizing!
 

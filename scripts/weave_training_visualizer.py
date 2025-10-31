@@ -514,28 +514,28 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
-    print("🚀 Creating W&B Weave app with 3D visualizations...")
-    print(f"📊 Project: {args.project}")
-    print("\n✨ Features showcased:")
+    print("Creating W&B Weave app with 3D visualizations...")
+    print(f"Project: {args.project}")
+    print("\nFeatures showcased:")
     print("   - 3D charts (new in W&B Server v0.75.0)")
     print("   - Semantic coloring by config properties")
     print("   - Interactive visualizations")
     print("   - Multi-stage training pipeline views")
-    print("\n📈 Visualizations being created:")
+    print("\nVisualizations being created:")
     print("   - 3D Training Trajectory")
     print("   - Hyperparameter Space (with semantic coloring)")
     print("   - Performance Landscape")
     print("   - Multi-Metric 3D Plot")
-    print("\n🔄 Processing runs...")
+    print("\nProcessing runs...")
     
     # Create the app
     try:
         app = create_complete_visualization_app(args.project)
-        print("\n✅ Weave app created successfully!")
-        print("\n🌐 Access your visualizations through the Weave interface")
-        print("\n💡 Tip: Use the enhanced_wandb_logging module to add more metrics")
+        print("\nWeave app created successfully!")
+        print("\nAccess your visualizations through the Weave interface")
+        print("\nTip: Use the enhanced_wandb_logging module to add more metrics")
         print("   for even richer visualizations!")
     except Exception as e:
-        print(f"\n❌ Error creating app: {e}")
-        print("\n💡 Make sure you have runs logged to W&B first!")
+        print(f"\nError creating app: {e}")
+        print("\nMake sure you have runs logged to W&B first!")
         print("   Run your training scripts with W&B enabled (run != 'dummy')")

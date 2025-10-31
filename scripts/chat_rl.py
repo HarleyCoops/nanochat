@@ -27,6 +27,7 @@ from nanochat.common import compute_init, compute_cleanup, print0, get_base_dir,
 from nanochat.checkpoint_manager import save_checkpoint, load_model
 from nanochat.engine import Engine
 from tasks.gsm8k import GSM8K
+from scripts.enhanced_wandb_logging import enhance_wandb_logging, log_dataset_metrics, log_evaluation_metrics_3d
 
 # RL hyperparameters
 run = "dummy" # wandb run name
@@ -233,10 +234,14 @@ for step in range(num_steps):
         print_passk = [f"Pass@{k}: {passk[k - 1].item():.4f}" for k in range(1, device_batch_size + 1)]
         print0(f"Step {step} | {', '.join(print_passk)}")
         log_passk = {f"pass@{k}": passk[k - 1].item() for k in range(1, device_batch_size + 1)}
-        wandb_run.log({
-            "step": step,
-            **log_passk,
-        })
+        
+        # Enhanced evaluation logging for 3D visualization
+        log_evaluation_metrics_3d(
+            wandb_run=wandb_run,
+            step=step,
+            metrics=log_passk,
+            training_stage="rl",
+        )
 
     # Forward/Backward on rollouts over multiple examples in the dataset
     rewards_list = []
@@ -284,11 +289,30 @@ for step in range(num_steps):
         mean_reward = mean_reward_tensor.item()
         mean_sequence_length = mean_sequence_length_tensor.item()
     print0(f"Step {step}/{num_steps} | Average reward: {mean_reward} | Average sequence length: {mean_sequence_length:.2f}")
-    wandb_run.log({
-        "step": step,
-        "reward": mean_reward,
-        "sequence_length": mean_sequence_length,
-    })
+    
+    # Enhanced logging
+    enhance_wandb_logging(
+        wandb_run=wandb_run,
+        step=step,
+        device=device,
+        dt=0.0,  # Not tracked in RL
+        tokens_per_sec=0.0,
+        mfu=0.0,
+        flops_so_far=0.0,
+        total_training_time=0.0,
+        training_stage="rl",
+        dataset_name="GSM8K",
+        reward=mean_reward,
+        sequence_length=mean_sequence_length,
+    )
+    
+    # Log dataset metrics
+    dataset_metrics = log_dataset_metrics(
+        dataset_name="GSM8K",
+        dataset_size=len(train_task),
+        examples_seen=step * examples_per_step,
+    )
+    wandb_run.log(dataset_metrics)
 
     # Update the model parameters
     lrm = get_lr_multiplier(step)

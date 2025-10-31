@@ -22,6 +22,7 @@ from nanochat.checkpoint_manager import load_model
 from nanochat.checkpoint_manager import save_checkpoint
 from nanochat.engine import Engine
 from scripts.chat_eval import run_chat_eval
+from scripts.enhanced_wandb_logging import enhance_wandb_logging, DatasetTracker, log_evaluation_metrics_3d
 
 from tasks.common import TaskMixture, TaskSequence
 from tasks.mmlu import MMLU
@@ -86,6 +87,11 @@ train_ds = TaskMixture([
 ]) # 2.3K + 1.1K + 8K + 10K = 21.4K rows
 val_ds = SmolTalk(split="test") # general conversations, 24K rows (though we don't actually use all of it)
 
+# Initialize dataset tracker for enhanced logging
+task_names = ["ARC-Easy", "ARC-Challenge", "GSM8K", "SmolTalk"]
+task_sizes = [len(task) for task in train_ds.tasks]
+dataset_tracker = DatasetTracker(task_names, task_sizes)
+
 # -----------------------------------------------------------------------------
 # DataLoader
 
@@ -115,6 +121,11 @@ def sft_data_generator(dataset, batch_size):
     while True:
         for i in range(ddp_rank, len(dataset), ddp_world_size):
             doc = dataset[i]
+            # Track which dataset this example comes from
+            if hasattr(dataset, 'index_map') and i < len(dataset.index_map):
+                task_idx, local_idx = dataset.index_map[i % len(dataset.index_map)]
+                current_dataset_name = task_names[task_idx] if task_idx < len(task_names) else "unknown"
+                dataset_tracker.increment(current_dataset_name)
             ids, mask = tokenizer.render_conversation(doc)
             batch.append((ids, mask))
             if len(batch) == batch_size:
@@ -198,10 +209,13 @@ for step in range(num_iterations):
             metrics["humaneval_acc"] = run_chat_eval("HumanEval", model, tokenizer, engine, max_problems=64)
         metrics_str = ', '.join(f'{k}: {v:.6f}' for k, v in metrics.items())
         print0(f"Step {step:05d} | {metrics_str}")
-        wandb_run.log({
-            "step": step,
-            **metrics,
-        })
+        # Enhanced evaluation logging for 3D visualization
+        log_evaluation_metrics_3d(
+            wandb_run=wandb_run,
+            step=step,
+            metrics=metrics,
+            training_stage="sft",
+        )
         model.train()
 
     if last_step:
@@ -235,12 +249,23 @@ for step in range(num_iterations):
     train_loss_item = train_loss.item()
     num_tokens_item = num_tokens.item()
     print0(f"Step {step:05d}/{num_iterations:05d} | Training loss: {train_loss_item:.6f}| lrm: {lrm:.6f}| num_tokens: {num_tokens_item:,}")
-    wandb_run.log({
-        "step": step,
-        "lrm": lrm,
-        "train_loss": train_loss_item,
-        "num_tokens": num_tokens_item,
-    })
+    
+    # Enhanced logging with dataset tracking
+    dataset_tracker.log_step(wandb_run, step, log_every=50)
+    enhance_wandb_logging(
+        wandb_run=wandb_run,
+        step=step,
+        device=device,
+        dt=0.0,  # Not tracked in SFT, but can be calculated if needed
+        tokens_per_sec=0.0,  # Can be calculated from num_tokens if dt is tracked
+        mfu=0.0,  # Not calculated in SFT
+        flops_so_far=0.0,  # Not tracked in SFT
+        total_training_time=0.0,  # Not tracked in SFT
+        training_stage="sft",
+        train_loss=train_loss_item,
+        num_tokens=num_tokens_item,
+        lrm=lrm,
+    )
     step += 1
 
 # Save the model at the end of the run

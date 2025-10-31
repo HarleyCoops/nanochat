@@ -27,6 +27,7 @@ from tasks.common import TaskMixture
 from tasks.gsm8k import GSM8K
 from tasks.mmlu import MMLU
 from tasks.smoltalk import SmolTalk
+from scripts.enhanced_wandb_logging import enhance_wandb_logging, DatasetTracker, log_task_mixture_metrics
 
 # -----------------------------------------------------------------------------
 run = "dummy" # wandb run name default ("dummy" is special - we won't log to wandb)
@@ -98,13 +99,19 @@ val_dataset = TaskMixture([
     MMLU(subset="all", split="test", stop=5200), # 14K rows in test set, use only 5.2K to match the train ratios
     GSM8K(subset="main", split="test", stop=420), # 1.32K rows in test set, use only 420 to match the train ratios
 ]) # total: 24K + 14K + 1.32K ~= 39K rows
+
+# Initialize dataset tracker for enhanced logging
+task_names = ["SmolTalk", "MMLU", "GSM8K"]
+task_sizes = [len(task) for task in train_dataset.tasks]
+dataset_tracker = DatasetTracker(task_names, task_sizes)
 # DataLoader is defined here, it emits inputs, targets : 2D tensors of shape (device_batch_size, max_seq_len)
 # A big problem is that we don't know the final num_iterations in advance. So we create
 # these two global variables and update them from within the data generator.
 last_step = False # we will toggle this to True when we reach the end of the dataset
 approx_progress = 0.0 # will go from 0 to 1 over the course of the epoch
+current_dataset_name = None # track which dataset we're currently using
 def mid_data_generator(split):
-    global last_step, approx_progress
+    global last_step, approx_progress, current_dataset_name
     assert split in {"train", "val"}, "split must be 'train' or 'val'"
     dataset = train_dataset if split == "train" else val_dataset
     dataset_size = len(dataset)
@@ -117,6 +124,12 @@ def mid_data_generator(split):
         # Accumulate enough tokens for one iteration before yielding
         while len(token_buffer) < needed_tokens:
             conversation = dataset[cursor]
+            # Track which dataset this example comes from
+            if hasattr(dataset, 'index_map') and cursor < len(dataset.index_map):
+                task_idx, local_idx = dataset.index_map[cursor % len(dataset.index_map)]
+                current_dataset_name = task_names[task_idx] if task_idx < len(task_names) else "unknown"
+                if split == "train":
+                    dataset_tracker.increment(current_dataset_name)
             ids, _ = tokenizer.render_conversation(conversation)
             token_buffer.extend(ids)
             cursor += ddp_world_size
@@ -255,16 +268,23 @@ while True:
         total_training_time += dt # only count the time after the first 10 steps
     print0(f"step {step:05d} ({pct_done:.2f}%) | loss: {debiased_smooth_loss:.6f} | lrm: {lrm:.2f} | dt: {dt * 1000:.2f}ms | tok/sec: {tok_per_sec:,} | mfu: {mfu:.2f} | total time: {total_training_time/60:.2f}m")
     if step % 10 == 0:
-        wandb_run.log({
-            "step": step,
-            "total_training_flops": flops_so_far,
-            "total_training_time": total_training_time,
-            "train/loss": debiased_smooth_loss,
-            "train/lrm": lrm,
-            "train/dt": dt,
-            "train/tok_per_sec": tok_per_sec,
-            "train/mfu": mfu,
-        })
+        # Enhanced logging with dataset tracking
+        dataset_tracker.log_step(wandb_run, step, current_dataset_name, log_every=10)
+        enhance_wandb_logging(
+            wandb_run=wandb_run,
+            step=step,
+            device=device,
+            dt=dt,
+            tokens_per_sec=tok_per_sec,
+            mfu=mfu,
+            flops_so_far=flops_so_far,
+            total_training_time=total_training_time,
+            training_stage="midtraining",
+            dataset_name=current_dataset_name,
+            train_loss=debiased_smooth_loss,
+            train_lrm=lrm,
+            total_training_flops=flops_so_far,
+        )
 
 # print a few more stats
 print0(f"Peak memory usage: {torch.cuda.max_memory_allocated() / 1024 / 1024:.2f}MiB")

@@ -22,6 +22,7 @@ from nanochat.checkpoint_manager import save_checkpoint
 from nanochat.loss_eval import evaluate_bpb
 from nanochat.engine import Engine
 from scripts.base_eval import evaluate_model
+from scripts.enhanced_wandb_logging import enhance_wandb_logging, log_evaluation_metrics_3d
 print_banner()
 
 # -----------------------------------------------------------------------------
@@ -198,12 +199,16 @@ for step in range(num_iterations + 1):
         with autocast_ctx:
             results = evaluate_model(orig_model, tokenizer, device, max_per_task=core_metric_max_per_task)
         print0(f"Step {step:05d} | CORE metric: {results['core_metric']:.4f}")
-        wandb_run.log({
-            "step": step,
-            "total_training_flops": flops_so_far,
-            "core_metric": results["core_metric"],
-            "centered_results": results["centered_results"],
-        })
+        # Enhanced evaluation logging for 3D visualization
+        log_evaluation_metrics_3d(
+            wandb_run=wandb_run,
+            step=step,
+            metrics={
+                "core_metric": results["core_metric"],
+                **results.get("centered_results", {}),
+            },
+            training_stage="pretraining",
+        )
         model.train()
 
     # once in a while: sample from the model (only on master process)
@@ -292,16 +297,22 @@ for step in range(num_iterations + 1):
         total_training_time += dt # only count the time after the first 10 steps
     print0(f"step {step:05d}/{num_iterations:05d} ({pct_done:.2f}%) | loss: {debiased_smooth_loss:.6f} | lrm: {lrm:.2f} | dt: {dt * 1000:.2f}ms | tok/sec: {tok_per_sec:,} | mfu: {mfu:.2f} | total time: {total_training_time/60:.2f}m")
     if step % 100 == 0:
-        wandb_run.log({
-            "step": step,
-            "total_training_flops": flops_so_far,
-            "total_training_time": total_training_time,
-            "train/loss": debiased_smooth_loss,
-            "train/lrm": lrm,
-            "train/dt": dt,
-            "train/tok_per_sec": tok_per_sec,
-            "train/mfu": mfu,
-        })
+        # Enhanced logging with comprehensive metrics
+        enhance_wandb_logging(
+            wandb_run=wandb_run,
+            step=step,
+            device=device,
+            dt=dt,
+            tokens_per_sec=tok_per_sec,
+            mfu=mfu,
+            flops_so_far=flops_so_far,
+            total_training_time=total_training_time,
+            training_stage="pretraining",
+            dataset_name="FineWeb-EDU",
+            train_loss=debiased_smooth_loss,
+            train_lrm=lrm,
+            total_training_flops=flops_so_far,
+        )
 
 # print a few more stats
 print0(f"Peak memory usage: {torch.cuda.max_memory_allocated() / 1024 / 1024:.2f}MiB")
